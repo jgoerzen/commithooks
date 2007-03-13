@@ -191,7 +191,7 @@ class CommitHook:
         if self.url:
             message += "  More details, including a diff, are available at:\n"
             message += "    %s\n" % self.url
-        message += "\nCommit log:\n\n"
+        message += "\n\n"
         if self.logfile:
             fd = open(self.logfile)
             message += fd.read()
