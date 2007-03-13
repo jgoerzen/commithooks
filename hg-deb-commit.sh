@@ -12,6 +12,7 @@ FILE="`mktemp -t hg-commit.sh.XXXXXXXXXX`"
 hg log -v -r "$HG_NODE" | grep -v "^files:" > "$FILE"
 
 cat >>"$FILE" <<EOF
+
 Diff: $URL?cmd=changeset;node=$HG_NODE;style=raw
 EOF
 
