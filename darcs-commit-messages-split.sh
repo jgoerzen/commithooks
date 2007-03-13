@@ -9,6 +9,8 @@
 
 #email=$1
 
+INSTDIR="$(dirname $(readlink -f $0))"
+
 [[ -z ${DARCS} ]] && DARCS="/usr/bin/darcs"
 [[ -z ${CURRENTHASH} ]] && CURRENTHASH="_darcs/current-hash"
 
@@ -65,13 +67,25 @@ fi
                 log=$(${DARCS} changes                  \
                        --matches="hash ${patch}"        )
 
-                /usr/local/bin/trac-post-commit-hook    \
+                "$INSTDIR/trac-post-commit-hook"    \
                        -p "/home/trac/instances/${project}" \
                        -r "${rev}" \
                        -u "${author}" \
                        -s "http://software.complete.org/${project}" \
                        -m "${log}" \
                        || true
+
+                DCTMP="`mktemp -t darcs-commit-messages-split.sh.XXXXXXXXXX`"
+                darcs changes --matches="hash ${patch}" > "$DCTMP"
+                "$INSTDIR/deb-post-commit-hook" \
+                       -r "${rev}" \
+                       -u "${author}" \
+                       -m "${log}" \
+                       -s "bugs.debian.org" \
+                       -U "http://software.complete.org/${project}/changeset/${rev}" \
+                       -f "$DCTMP" \
+                       -F "jgoerzen@complete.org"
+
 		
 	done
 #) &
