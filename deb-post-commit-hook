@@ -197,7 +197,7 @@ class CommitHook:
             message += self.msg
 
         if self.url:
-            message += "\n\n  More details are available at:\n"
+            message += "\nMore details are available at:\n"
             message += "    %s\n" % self.url
 
         msg = MIMEText(message)
