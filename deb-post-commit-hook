@@ -170,7 +170,7 @@ class CommitHook:
 
     def _cmdClose(self, ticket):
         msg = self._getMessage(ticket)
-        msg['Cc'] = '<control@bugs.debian.org>' % self.base
+        msg['Cc'] = '<control@%s>' % self.base
 
         message = "tags %s pending\nthanks\n\n" % ticket
 
