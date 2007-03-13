@@ -9,13 +9,11 @@ CMD="$(dirname $(readlink -f $0))/deb-post-commit-hook"
 
 FILE="`mktemp -t hg-commit.sh.XXXXXXXXXX`"
 
-cat >"$FILE" <<EOF
-  Download raw diff from:
-    $URL?cmd=changeset;node=$HG_NODE;style=raw
+hg log -v -r "$HG_NODE" | grep -v "^files:" > "$FILE"
 
+cat >>"$FILE" <<EOF
+Diff: $URL?cmd=changeset;node=$HG_NODE;style=raw
 EOF
-
-hg log -v -r "$HG_NODE" | grep -v "^files:" >> "$FILE"
 
 "$CMD" -r "$HG_NODE" \
     -u "`hg log -r $HG_NODE | grep '^user:' | sed 's/^user: *//'`" \

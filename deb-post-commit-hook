@@ -188,16 +188,17 @@ class CommitHook:
     def _getMessage(self, ticket):
         message = "A commit relevant to this bug has occurred.\n\n"
         message += "  Revision: %s\n" % self.rev
-        if self.url:
-            message += "  More details, including a diff, are available at:\n"
-            message += "    %s\n" % self.url
-        message += "\n\n"
+        message += "\n"
         if self.logfile:
             fd = open(self.logfile)
             message += fd.read()
             fd.close()
         else:
             message += self.msg
+
+        if self.url:
+            message += "\n\n  More details are available at:\n"
+            message += "    %s\n" % self.url
 
         msg = MIMEText(message)
         msg['To'] = '<%s@%s>' % (ticket, self.base)
