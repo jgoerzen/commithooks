@@ -11,7 +11,7 @@ FILE="`mktemp -t hg-commit.sh.XXXXXXXXXX`"
 
 cat >"$FILE" <<EOF
   Download raw diff from:
-    $URL/raw-rev/$HG_NODE
+    $URL?cmd=changeset;node=$HG_NODE;style=raw
 
 EOF
 
