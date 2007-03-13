@@ -102,6 +102,8 @@ parser.add_option('-U', '--url', dest='url',
                   help='URL where this patch/diff may be viewed')
 parser.add_option('-f', '--logfile', dest='logfile',
                   help='Add this instead of -m to the message')
+parser.add_option('-F', '--fromaddr', dest='fromaddr',
+                  help='From address for sent mail')
 
 (options, args) = parser.parse_args(sys.argv[1:])
 
@@ -128,10 +130,10 @@ class CommitHook:
                        'refs':       '_cmdRefs',
                        'see':        '_cmdRefs'}
 
-    def __init__(self, project=options.project, author=options.user,
+    def __init__(self, author=options.user,
                  rev=options.rev, msg=options.msg, url=options.url,
-                 encoding=options.encoding, base=options.base, logfile=options.logfile):
-        msg = to_unicode(msg, encoding)
+                 encoding=options.encoding, base=options.base, logfile=options.logfile,
+                 fromaddr=options.fromaddr):
         self.author = author
         self.rev = rev
         self.msg = msg
@@ -139,6 +141,10 @@ class CommitHook:
         self.base = base
         self.url = url
         self.logfile = logfile
+        if fromaddr:
+            self.fromaddr = fromaddr
+        else:
+            self.fromaddr = author
 
         cmdGroups = commandPattern.findall(msg)
 
@@ -152,9 +158,6 @@ class CommitHook:
 
         for tkt_id, cmds in tickets.iteritems():
             try:
-                db = self.env.get_db_cnx()
-                
-                ticket = Ticket(self.env, int(tkt_id), db)
                 for cmd in cmds:
                     cmd(tkt_id)
 
@@ -175,18 +178,14 @@ class CommitHook:
         p = os.popen("/usr/sbin/sendmail -t", "w")
         p.write(msg.as_string())
         status = p.close()
-        if status != 0:
-           print "Sendmail died"
 
     def _cmdRefs(self, ticket):
         msg = self._getMessage(ticket)
         p = os.popen("/usr/sbin/sendmail -t", "w")
         p.write(msg.as_string())
         status = p.close()
-        if status != 0:
-           print "Sendmail died"
 
-     def _getMessage(self, ticket):
+    def _getMessage(self, ticket):
         message = "A commit relevant to this bug has occurred.\n\n"
         message += "  Revision: %s\n" % self.rev
         if self.url:
@@ -204,7 +203,7 @@ class CommitHook:
         #msg['To'] = '%s@%s' % (ticket, self.base)
         msg['To'] = '%s %s <jgoerzen>' % (ticket, self.base)
         msg['Subject'] = 'New commit'
-        msg['From'] = self.author
+        msg['From'] = self.fromaddr
 
         return msg
 
