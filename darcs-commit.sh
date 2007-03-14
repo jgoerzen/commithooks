@@ -1,13 +1,18 @@
 #! /bin/bash
 
 # usage:
-# $1 mail address
+# $1 mail from address for Debian
+# $2 trac URL
+# $3 trac installation path
 
 # Originally written by Andres Loeh
 # Changed by Duncan Coutts to send an email per-patch rather than per-push
 # Modified by John Goerzen to use trac-post-commit-hook
+# Modified by John Goerzen for Debian
 
 email="$1"
+tracurl="$2"
+tracpath="$3"
 
 INSTDIR="$(dirname $(readlink -f $0))"
 
@@ -68,10 +73,10 @@ fi
                        --matches="hash ${patch}"        )
 
                 "$INSTDIR/trac-post-commit-hook"    \
-                       -p "/home/trac/instances/${project}" \
+                       -p "${tracpath}" \
                        -r "${rev}" \
                        -u "${author}" \
-                       -s "http://software.complete.org/${project}" \
+                       -s "${tracurl}" \
                        -m "${log}" \
                        || true
 
@@ -82,9 +87,10 @@ fi
                        -u "${author}" \
                        -m "${log}" \
                        -s "bugs.debian.org" \
-                       -U "http://software.complete.org/${project}/changeset/${rev}" \
+                       -U "${tracurl}/changeset/${rev}" \
                        -f "$DCTMP" \
                        -F "$email"
+                rm "$DCTMP"
 
 		
 	done
