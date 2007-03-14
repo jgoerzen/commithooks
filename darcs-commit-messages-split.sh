@@ -7,7 +7,7 @@
 # Changed by Duncan Coutts to send an email per-patch rather than per-push
 # Modified by John Goerzen to use trac-post-commit-hook
 
-#email=$1
+email="$1"
 
 INSTDIR="$(dirname $(readlink -f $0))"
 
@@ -84,7 +84,7 @@ fi
                        -s "bugs.debian.org" \
                        -U "http://software.complete.org/${project}/changeset/${rev}" \
                        -f "$DCTMP" \
-                       -F "jgoerzen@complete.org"
+                       -F "$email"
 
 		
 	done
