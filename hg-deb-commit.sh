@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Usage:
+#
+#  $1 Path to Mercurial web server for this repo
+#  $2 From address for mails to Debian BTS
 set -e
 
 URL="$1"
