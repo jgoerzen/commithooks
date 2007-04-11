@@ -11,11 +11,14 @@ tracpath="$2"
 
 CMD="$(dirname $(readlink -f $0))/trac-post-commit-hook"
 
-"$CMD" \
-    -p "$tracpath" \
-    -r "$HG_NODE" \
-    -u "`hg log -r $HG_NODE | grep '^user:' | sed 's/^user: *//'`" \
-    -s "$URL" \
-    -m "`hg log -v -r $HG_NODE | sed '1,/^description:/ d'`"
+hg log -r $HG_NODE --template '{node|short}\n{author}\n{desc}\n' | {
+  read shortnode
+  read user
+  read desc
+  while read line
+  do
+    desc="$desc"$'\n'"$line"
+  done
 
-rm "$FILE"
+  echo "$CMD" -p "$tracpath" -r "$shortnode" -u "$user" -s "$URL" -m "$desc"
+}
