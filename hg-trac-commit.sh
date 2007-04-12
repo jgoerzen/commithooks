@@ -20,5 +20,5 @@ hg log -r $HG_NODE --template '{node|short}\n{author}\n{desc}\n' | {
     desc="$desc"$'\n'"$line"
   done
 
-  echo "$CMD" -p "$tracpath" -r "$shortnode" -u "$user" -s "$URL" -m "$desc"
+  "$CMD" -p "$tracpath" -r "$shortnode" -u "$user" -s "$URL" -m "$desc"
 }
