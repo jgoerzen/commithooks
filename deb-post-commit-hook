@@ -117,6 +117,9 @@ else:
 commandPattern = re.compile(leftEnv + r'(?P<action>[A-Za-z]*).?(?P<ticket>deb#[0-9]+(?:(?:[, &]*|[ ]?and[ ]?)deb#[0-9]+)*)' + rghtEnv)
 ticketPattern = re.compile(r'deb#([0-9]*)')
 
+debCommandPattern = re.compile(leftEnv + r'(?P<action>[A-Za-z]*):.?(?P<ticket>#[0-9]+(?:(?:[, &]*|[ ]?and[ ]?)#[0-9]+)*)' + rghtEnv)
+debTicketPattern = re.compile(r'#([0-9]*)')
+
 class CommitHook:
     _supported_cmds = {'close':      '_cmdClose',
                        'closed':     '_cmdClose',
@@ -147,12 +150,20 @@ class CommitHook:
             self.fromaddr = author
 
         cmdGroups = commandPattern.findall(msg)
+        debCmdGroups = debCommandPattern.findall(msg)
 
         tickets = {}
         for cmd, tkts in cmdGroups:
             funcname = CommitHook._supported_cmds.get(cmd.lower(), '')
             if funcname:
                 for tkt_id in ticketPattern.findall(tkts):
+                    func = getattr(self, funcname)
+                    tickets.setdefault(tkt_id, []).append(func)
+
+        for cmd, tkts in debCmdGroups:
+            funcname = CommitHook._supported_cmds.get(cmd.lower(), '')
+            if funcname:
+                for tkt_id in debTicketPattern.findall(tkts):
                     func = getattr(self, funcname)
                     tickets.setdefault(tkt_id, []).append(func)
 
