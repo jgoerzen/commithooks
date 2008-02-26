@@ -189,12 +189,14 @@ class CommitHook:
         p = os.popen("/usr/sbin/sendmail -t", "w")
         p.write(msg.as_string())
         status = p.close()
+        print '%s: tagged %s pending, sent notice' % (self.rev, ticket)
 
     def _cmdRefs(self, ticket):
         msg = self._getMessage(ticket)
         p = os.popen("/usr/sbin/sendmail -t", "w")
         p.write(msg.as_string())
         status = p.close()
+        print '%s: sent notice' % (self.rev, ticket)
 
     def _getMessage(self, ticket):
         message = "A commit relevant to this bug has occurred.\n\n"
