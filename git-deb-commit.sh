@@ -37,8 +37,8 @@ git diff-tree --stat --summary --find-copies-harder \
 
 
 "$CMD" -r "$HG_NODE" \
-    -u "git show -s --pretty=format:%an ${gitrev}" \
-    -m "git show -s --pretty=format:%s%n%b ${gitrev}" \
+    -u "`git show -s --pretty=format:%an ${gitrev}`" \
+    -m "`git show -s --pretty=format:%s%n%b ${gitrev}`" \
     -s "bugs.debian.org" \
     -U "${URL}a=commit;h=${gitrev}" \
     -f "$FILE" \
