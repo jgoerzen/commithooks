@@ -140,21 +140,6 @@ generate_email()
 			;;
 	esac
 
-	# Check if we've got anyone to send to
-	if [ -z "$recipients" ]; then
-		case "$refname_type" in
-			"annotated tag")
-				config_name="hooks.announcelist"
-				;;
-			*)
-				config_name="hooks.mailinglist"
-				;;
-		esac
-		echo >&2 "*** $config_name is not set so no email will be sent"
-		echo >&2 "*** for $refname update $oldrev->$newrev"
-		exit 0
-	fi
-
 	# Email parameters
 	# The email subject will contain the best description of the ref
 	# that we can build from the parameters
@@ -162,8 +147,6 @@ generate_email()
 	if [ -z "$describe" ]; then
 		describe=$rev
 	fi
-
-	generate_email_header
 
 	# Call the correct body generation function
 	fn_name=general
@@ -638,6 +621,6 @@ if [ -n "$1" -a -n "$2" -a -n "$3" ]; then
 else
 	while read oldrev newrev refname
 	do
-		generate_email $oldrev $newrev $refname | send_mail
+		generate_email $oldrev $newrev $refname
 	done
 fi
