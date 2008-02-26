@@ -11,6 +11,8 @@
 #     http://git.kernel.org/gitweb.cgi?p=boot/syslinux/syslinux-gpxe.git;
 #     http://repo.or.cz/w/git.git?
 #
+#     You probably want to surround this with quotes!!!!!!!!!!
+#
 #     After this, we can append things like "a=shortlog"
 #
 #  $2 From address for mails to Debian BTS
