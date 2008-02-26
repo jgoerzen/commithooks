@@ -28,7 +28,7 @@ procrevs() {
         git show -s --pretty "$gitrev" > "$FILE"
         cat >>"$FILE" <<EOF
 
-Diff: ${URL}a=commitdiff_plain;h=${gitrev}"
+Diff: ${URL}a=commitdiff_plain;h=${gitrev}
 
 EOF
 
@@ -41,7 +41,7 @@ EOF
             -s "bugs.debian.org" \
             -U "${URL}a=commit;h=${gitrev}" \
             -f "$FILE" \
-            -F "$2"
+            -F "$FROMADDR"
 
         rm "$FILE"
     done
