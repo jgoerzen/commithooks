@@ -14,6 +14,9 @@
 #     After this, we can append things like "a=shortlog"
 #
 #  $2 From address for mails to Debian BTS
+#
+# Call this from hooks/post-receive
+
 set -e
 
 URL="$1"
