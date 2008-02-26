@@ -160,38 +160,6 @@ generate_email()
 	esac
 	generate_${change_type}_${fn_name}_email
 
-	generate_email_footer
-}
-
-generate_email_header()
-{
-	# --- Email (all stdout will be the email)
-	# Generate header
-	cat <<-EOF
-	To: $recipients
-	Subject: ${emailprefix}$projectdesc $refname_type, $short_refname, ${change_type}d. $describe
-	X-Git-Refname: $refname
-	X-Git-Reftype: $refname_type
-	X-Git-Oldrev: $oldrev
-	X-Git-Newrev: $newrev
-
-	This is an automated email from the git hooks/post-receive script. It was
-	generated because a ref change was pushed to the repository containing
-	the project "$projectdesc".
-
-	The $refname_type, $short_refname has been ${change_type}d
-	EOF
-}
-
-generate_email_footer()
-{
-	cat <<-EOF
-
-
-	hooks/post-receive
-	--
-	$projectdesc
-	EOF
 }
 
 # --------------- Branches
@@ -202,18 +170,15 @@ generate_email_footer()
 generate_create_branch_email()
 {
 	# This is a new branch and so oldrev is not valid
-	echo "        at  $newrev ($newrev_type)"
-	echo ""
 
-	echo $LOGBEGIN
 	# This shows all log entries that are not already covered by
 	# another ref - i.e. commits that are now accessible from this
 	# ref that were previously not accessible
 	# (see generate_update_branch_email for the explanation of this
 	# command)
 	git rev-parse --not --branches | grep -v $(git rev-parse $refname) |
-	git rev-list --pretty --stdin $newrev
-	echo $LOGEND
+	git rev-list --stdin $newrev
+
 }
 
 #
@@ -301,7 +266,6 @@ generate_update_branch_email()
 	for rev in $(git rev-list $newrev..$oldrev)
 	do
 		revtype=$(git cat-file -t "$rev")
-		echo "  discards  $rev ($revtype)"
 	done
 	if [ -z "$rev" ]; then
 		fast_forward=1
@@ -315,11 +279,10 @@ generate_update_branch_email()
 	for rev in $(git rev-list $oldrev..$newrev)
 	do
 		revtype=$(git cat-file -t "$rev")
-		echo "       via  $rev ($revtype)"
 	done
 
 	if [ "$fast_forward" ]; then
-		echo "      from  $oldrev ($oldrev_type)"
+            true
 	else
 		#  1. Existing revisions were removed.  In this case newrev
 		#     is a subset of oldrev - this is the reverse of a
@@ -331,57 +294,22 @@ generate_update_branch_email()
 		# happened, we set a flag to indicate that no log printout
 		# is required.
 
-		echo ""
-
 		# Find the common ancestor of the old and new revisions and
 		# compare it with newrev
 		baserev=$(git merge-base $oldrev $newrev)
 		rewind_only=""
 		if [ "$baserev" = "$newrev" ]; then
-			echo "This update discarded existing revisions and left the branch pointing at"
-			echo "a previous point in the repository history."
-			echo ""
-			echo " * -- * -- N ($newrev)"
-			echo "            \\"
-			echo "             O -- O -- O ($oldrev)"
-			echo ""
-			echo "The removed revisions are not necessarilly gone - if another reference"
-			echo "still refers to them they will stay in the repository."
 			rewind_only=1
 		else
-			echo "This update added new revisions after undoing existing revisions.  That is"
-			echo "to say, the old revision is not a strict subset of the new revision.  This"
-			echo "situation occurs when you --force push a change and generate a repository"
-			echo "containing something like this:"
-			echo ""
-			echo " * -- * -- B -- O -- O -- O ($oldrev)"
-			echo "            \\"
-			echo "             N -- N -- N ($newrev)"
-			echo ""
-			echo "When this happens we assume that you've already had alert emails for all"
-			echo "of the O revisions, and so we here report only the revisions in the N"
-			echo "branch from the common base, B."
+                        true
 		fi
 	fi
 
-	echo ""
 	if [ -z "$rewind_only" ]; then
-		echo "Those revisions listed above that are new to this repository have"
-		echo "not appeared on any other notification email; so we list those"
-		echo "revisions in full, below."
-
-		echo ""
-		echo $LOGBEGIN
 		git rev-parse --not --branches | grep -v $(git rev-parse $refname) |
-		git rev-list --pretty --stdin $oldrev..$newrev
-
-		# XXX: Need a way of detecting whether git rev-list actually
-		# outputted anything, so that we can issue a "no new
-		# revisions added by this update" message
-
-		echo $LOGEND
+		git rev-list --stdin $oldrev..$newrev
 	else
-		echo "No new revisions were added by this update."
+                true
 	fi
 
 	# The diffstat is shown from the old revision to the new revision.
@@ -391,9 +319,6 @@ generate_update_branch_email()
 	# point - the user will be interested in what this revision changed
 	# - including the undoing of previous revisions in the case of
 	# non-fast forward updates.
-	echo ""
-	echo "Summary of changes:"
-	git diff-tree --stat --summary --find-copies-harder $oldrev..$newrev
 }
 
 #
@@ -401,11 +326,7 @@ generate_update_branch_email()
 #
 generate_delete_branch_email()
 {
-	echo "       was  $oldrev"
-	echo ""
-	echo $LOGEND
-	git show -s --pretty=oneline $oldrev
-	echo $LOGEND
+    true
 }
 
 # --------------- Annotated tags
@@ -415,8 +336,6 @@ generate_delete_branch_email()
 #
 generate_create_atag_email()
 {
-	echo "        at  $newrev ($newrev_type)"
-
 	generate_atag_email
 }
 
@@ -426,9 +345,6 @@ generate_create_atag_email()
 #
 generate_update_atag_email()
 {
-	echo "        to  $newrev ($newrev_type)"
-	echo "      from  $oldrev (which is now obsolete)"
-
 	generate_atag_email
 }
 
@@ -437,63 +353,7 @@ generate_update_atag_email()
 #
 generate_atag_email()
 {
-	# Use git for-each-ref to pull out the individual fields from the
-	# tag
-	eval $(git for-each-ref --shell --format='
-	tagobject=%(*objectname)
-	tagtype=%(*objecttype)
-	tagger=%(taggername)
-	tagged=%(taggerdate)' $refname
-	)
-
-	echo "   tagging  $tagobject ($tagtype)"
-	case "$tagtype" in
-	commit)
-
-		# If the tagged object is a commit, then we assume this is a
-		# release, and so we calculate which tag this tag is
-		# replacing
-		prevtag=$(git describe --abbrev=0 $newrev^ 2>/dev/null)
-
-		if [ -n "$prevtag" ]; then
-			echo "  replaces  $prevtag"
-		fi
-		;;
-	*)
-		echo "    length  $(git cat-file -s $tagobject) bytes"
-		;;
-	esac
-	echo " tagged by  $tagger"
-	echo "        on  $tagged"
-
-	echo ""
-	echo $LOGBEGIN
-
-	# Show the content of the tag message; this might contain a change
-	# log or release notes so is worth displaying.
-	git cat-file tag $newrev | sed -e '1,/^$/d'
-
-	echo ""
-	case "$tagtype" in
-	commit)
-		# Only commit tags make sense to have rev-list operations
-		# performed on them
-		if [ -n "$prevtag" ]; then
-			# Show changes since the previous release
-			git rev-list --pretty=short "$prevtag..$newrev" | git shortlog
-		else
-			# No previous tag, show all the changes since time
-			# began
-			git rev-list --pretty=short $newrev | git shortlog
-		fi
-		;;
-	*)
-		# XXX: Is there anything useful we can do for non-commit
-		# objects?
-		;;
-	esac
-
-	echo $LOGEND
+    true
 }
 
 #
@@ -501,11 +361,7 @@ generate_atag_email()
 #
 generate_delete_atag_email()
 {
-	echo "       was  $oldrev"
-	echo ""
-	echo $LOGEND
-	git show -s --pretty=oneline $oldrev
-	echo $LOGEND
+    true
 }
 
 # --------------- General references
@@ -516,8 +372,6 @@ generate_delete_atag_email()
 #
 generate_create_general_email()
 {
-	echo "        at  $newrev ($newrev_type)"
-
 	generate_general_email
 }
 
@@ -527,9 +381,6 @@ generate_create_general_email()
 #
 generate_update_general_email()
 {
-	echo "        to  $newrev ($newrev_type)"
-	echo "      from  $oldrev"
-
 	generate_general_email
 }
 
@@ -547,17 +398,14 @@ generate_general_email()
 	# Note this section also catches any other reference type (although
 	# there aren't any) and deals with them in the same way.
 
-	echo ""
 	if [ "$newrev_type" = "commit" ]; then
-		echo $LOGBEGIN
-		git show --no-color --root -s $newrev
-		echo $LOGEND
+                git-parse-rev $newrev
 	else
 		# What can we do here?  The tag marks an object that is not
 		# a commit, so there is no log for us to display.  It's
 		# probably not wise to output git cat-file as it could be a
 		# binary blob.  We'll just say how big it is
-		echo "$newrev is a $newrev_type, and is $(git cat-file -s $newrev) bytes long."
+                true
 	fi
 }
 
@@ -566,11 +414,7 @@ generate_general_email()
 #
 generate_delete_general_email()
 {
-	echo "       was  $oldrev"
-	echo ""
-	echo $LOGEND
-	git show -s --pretty=oneline $oldrev
-	echo $LOGEND
+        true
 }
 
 send_mail()
