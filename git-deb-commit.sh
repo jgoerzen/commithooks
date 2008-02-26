@@ -48,3 +48,5 @@ EOF
 }
 
 ${GITREVCMD} | procrevs
+
+exit 0
