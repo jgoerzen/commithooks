@@ -20,28 +20,31 @@ URL="$1"
 FROMADDR="$2"
 
 CMD="$(dirname $(readlink -f $0))/deb-post-commit-hook"
+GITREVCMD="$(dirname $(readlink -f $0))/git-find-revs.sh"
 
-while read gitrev; do
-    FILE="`mktemp -t git-commit.sh.XXXXXXXXXX`"
-    git show -s --pretty "$gitrev" > "$FILE"
-    cat >>"$FILE" <<EOF
+procrevs() {
+    while read gitrev; do
+        FILE="`mktemp -t git-commit.sh.XXXXXXXXXX`"
+        git show -s --pretty "$gitrev" > "$FILE"
+        cat >>"$FILE" <<EOF
 
 Diff: ${URL}a=commitdiff_plain;h=${gitrev}"
 
 EOF
 
-    git diff-tree --stat --summary --find-copies-harder \
-        "${gitrev}^..${gitrev}" >> "$FILE"
+        git diff-tree --stat --summary --find-copies-harder \
+            "${gitrev}^..${gitrev}" >> "$FILE"
 
+        "$CMD" -r "$HG_NODE" \
+            -u "`git show -s --pretty=format:%an ${gitrev}`" \
+            -m "`git show -s --pretty=format:%s%n%b ${gitrev}`" \
+            -s "bugs.debian.org" \
+            -U "${URL}a=commit;h=${gitrev}" \
+            -f "$FILE" \
+            -F "$2"
 
-    "$CMD" -r "$HG_NODE" \
-        -u "`git show -s --pretty=format:%an ${gitrev}`" \
-        -m "`git show -s --pretty=format:%s%n%b ${gitrev}`" \
-        -s "bugs.debian.org" \
-        -U "${URL}a=commit;h=${gitrev}" \
-        -f "$FILE" \
-        -F "$2"
+        rm "$FILE"
+    done
+}
 
-    rm "$FILE"
-done
-
+${GITREVCMD} | procrevs
