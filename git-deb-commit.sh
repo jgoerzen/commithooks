@@ -24,7 +24,7 @@ GITREVCMD="$(dirname $(readlink -f $0))/git-find-revs.sh"
 
 procrevs() {
     while read gitrev; do
-        FILE="`mktemp -t git-commit.sh.XXXXXXXXXX`"
+        FILE="`mktemp -t git-deb-commit.sh.XXXXXXXXXX`"
         git show -s --pretty "$gitrev" > "$FILE"
         cat >>"$FILE" <<EOF
 
@@ -35,7 +35,7 @@ EOF
         git diff-tree --stat --summary --find-copies-harder \
             "${gitrev}^..${gitrev}" >> "$FILE"
 
-        "$CMD" -r "$HG_NODE" \
+        "$CMD" -r "${gitrev}" \
             -u "`git show -s --pretty=format:%an ${gitrev}`" \
             -m "`git show -s --pretty=format:%s%n%b ${gitrev}`" \
             -s "bugs.debian.org" \
