@@ -24,10 +24,10 @@ FROMADDR="$2"
 
 CMD="$(dirname $(readlink -f $0))/deb-post-commit-hook"
 GITREVCMD="$(dirname $(readlink -f $0))/git-find-revs.sh"
+FILE="`mktemp -t git-deb-commit.sh.XXXXXXXXXX`"
 
 procrevs() {
     while read gitrev; do
-        FILE="`mktemp -t git-deb-commit.sh.XXXXXXXXXX`"
         git show -s --pretty "$gitrev" > "$FILE"
         cat >>"$FILE" <<EOF
 
@@ -46,10 +46,11 @@ EOF
             -f "$FILE" \
             -F "$FROMADDR"
 
-        rm "$FILE"
     done
 }
 
 ${GITREVCMD} | procrevs
+
+rm "$FILE"
 
 exit 0
