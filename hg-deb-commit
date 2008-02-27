@@ -17,6 +17,7 @@ hg log -v -r "$HG_NODE" | grep -v "^files:" > "$FILE"
 
 cat >>"$FILE" <<EOF
 
+Revision: $HG_NODE
 Diff: $URL?cmd=changeset;node=$HG_NODE;style=raw
 EOF
 

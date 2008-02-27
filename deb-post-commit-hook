@@ -200,8 +200,6 @@ class CommitHook:
 
     def _getMessage(self, ticket):
         message = "A commit relevant to this bug has occurred.\n\n"
-        message += "  Revision: %s\n" % self.rev
-        message += "\n"
         if self.logfile:
             fd = open(self.logfile)
             message += fd.read()
