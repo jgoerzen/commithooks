@@ -399,7 +399,7 @@ generate_general_email()
 	# there aren't any) and deals with them in the same way.
 
 	if [ "$newrev_type" = "commit" ]; then
-                git-parse-rev $newrev
+                git-rev-parse $newrev
 	else
 		# What can we do here?  The tag marks an object that is not
 		# a commit, so there is no log for us to display.  It's
