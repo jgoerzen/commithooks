@@ -80,7 +80,7 @@ fi
                        -m "${log}" \
                        || true
 
-                DCTMP="`mktemp -t darcs-commit-messages-split.sh.XXXXXXXXXX`"
+                DCTMP="`mktemp -t darcs-commit-messages-split.XXXXXXXXXX`"
                 darcs changes --matches="hash ${patch}" > "$DCTMP"
                 "$INSTDIR/deb-post-commit-hook" \
                        -r "${rev}" \

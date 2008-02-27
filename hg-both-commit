@@ -8,6 +8,6 @@
 
 BASE="$(dirname $(readlink -f $0))"
 
-"$BASE/hg-trac-commit.sh" "$1" "$2"
-"$BASE/hg-deb-commit.sh" "$3" "$4"
+"$BASE/hg-trac-commit" "$1" "$2"
+"$BASE/hg-deb-commit" "$3" "$4"
 

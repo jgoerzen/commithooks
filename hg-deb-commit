@@ -11,7 +11,7 @@ FROMADDR="$2"
 
 CMD="$(dirname $(readlink -f $0))/deb-post-commit-hook"
 
-FILE="`mktemp -t hg-commit.sh.XXXXXXXXXX`"
+FILE="`mktemp -t hg-commit.XXXXXXXXXX`"
 
 hg log -v -r "$HG_NODE" | grep -v "^files:" > "$FILE"
 
