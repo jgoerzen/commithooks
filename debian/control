@@ -6,6 +6,7 @@ Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 Vcs-Browser: http://git.complete.org/commithooks
 Vcs-Git: git://git.complete.org/commithooks
+Homepage: http://software.complete.org/commithooks
 
 Package: commithooks
 Architecture: all
@@ -18,5 +19,4 @@ Description: Hooks to inject VCS commits into bug-tracking systems
  .
  Supported VCS include Darcs, Mercurial, and Git.  Supported BTS
  include debbugs (the Debian BTS) and Trac.
- .
- Homepage: http://software.complete.org/commithooks
+
