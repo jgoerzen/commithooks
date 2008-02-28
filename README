@@ -76,5 +76,146 @@ hg-trac-commit: Commit Mercurial messages to Trac
 DARCS FRONTEND
 ------------------------------------------------------------
 
-darcs-both-commit 
+=== darcs-both-commit
+
+To configure, edit _darcs/prefs/defaults in the Darcs repo on your
+server.  Add lines like this:
+
+  apply posthook /usr/bin/darcs-both-commit user@example.com
+     http://trac.example.com/project /opt/trac/instances/project
+
+  pull posthook /usr/bin/darcs-both-commit user@example.com
+     http://trac.example.com/project /opt/trac/instances/project
+
+Note that each of those entries should be contained entirely on one
+line; they are just wrapped here for readability.
+
+The parameters are:
+
+ $1 - the "From" address for submissions to Debian BTS
+ $2 - the URL for the trac instance
+ $3 - the path to the trac instance
+
+------------------------------------------------------------
+GIT FRONTENDS
+------------------------------------------------------------
+
+I recommend that you configure the Git frontends in your Git server
+repo only.  To do so, you will want to edit .git/hooks/post-receive
+and insert, at the end, a call to the Git frontend as shown below.
+After doing so, make sure you use chmod to mark the post-receive hook
+executable.  Do not "source" with "." the frontend as the post-receive
+example shows.
+
+=== git-deb-commit
+
+Sample addition to post-receive:
+
+  /usr/bin/git-deb-commit 'http://repo.or.cz/w/git.git?' \
+    user@example.com
+
+The args are:
+
+ $1 - Path to gitweb web server for this repo
+      
+      Should end with '?' if pathinfo is used or ';' otherwise
+ 
+      Examples:
+      
+      'http://git.kernel.org/gitweb.cgi?p=boot/syslinux/syslinux-gpxe.git;'
+      'http://repo.or.cz/w/git.git?'
+ 
+      You probably want to surround this with quotes as shown above!
+ 
+      After this, the script can append things like "a=shortlog"
+
+ $2 - "From" address for mails to the Debian BTS
+
+=== git-trac-commit
+
+Designed to work with GitPlugin at http://trac-hacks.org/wiki/GitPlugin
+
+Sample addition to post-receive hook:
+
+  /usr/bin/git-trac-commit http://trac.example.com/project \
+      /opt/trac/instances/project
+
+The args are:
+
+ $1 - URL of this trac instance
+ $2 - Filesystem path to the trac instance
+
+=== git-both-commit
+
+Scans for Trac and debbugs.
+
+Sample addition to post-receive:
+
+  /usr/bin/git-both-commit http://trac.example.com/project \
+      /opt/trac/instances/project \
+      'http://repo.or.cz/w/git.git?' \
+      user@example.com
+
+The args are:
+
+ $1 - URL for this trac instance
+ $2 - Path to Trac installation
+ $3 - URL for gitweb server (see notes above)
+ $4 - From address for debbugs BTS
+
+------------------------------------------------------------
+MERCURIAL FRONTENDS
+------------------------------------------------------------
+
+I recommend configuring these in the Mercurial repo on your server.
+Edit .hg/hgrc and add sections as listed below.
+
+=== hg-deb-commit
+
+Sample .hg/hgrc section:
+
+  [hooks]
+  incoming = /usr/bin/hg-deb-commit http://hg.example.com/project
+           user@example.com
+
+That "incoming" stuff should all be on one line.
+
+The args are:
+
+ $1 - Path to hgweb/hgwebdir for this repo
+ $2 - "From" address for mails to Debian BTS
+
+=== hg-trac-commit
+
+Sample .hg/hgrc section:
+  
+   [hooks]
+   incoming = /usr/bin/hg-trac-commit http://trac.example.com/project
+       /opt/trac/instances/project
+
+That "incoming" stuff should all be on one line.
+
+The args are:
+
+ $1 - URL of this trac instance
+ $2 - Filesystem path to the trac instance
+
+=== hg-both-commit
+
+Sample .hg/hgrc section:
+
+   [hooks]
+   incoming = /usr/bin/hg-both-commit http://trac.example.com/project
+      /opt/trac/instances/project http://hg.example.com/project
+      user@example.com
+
+As before, those three incoming lines are wrapped here for readibility
+but should be all one line in Mercurial.
+
+The args are:
+
+ $1 - URL of this trac instance
+ $2 - Filesystem path to the trac instance
+ $3 - Path to hgweb/hgwebdir for this repo
+ $4 - "From" address for mails to Debian BTS
 
