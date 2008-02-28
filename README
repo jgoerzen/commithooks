@@ -56,6 +56,53 @@ If you are using one of the supported VCS, you will likely not invoke
 the backends directly, but rather call a frontend which will take care
 of invoking the backend.
 
+=== Operation of the backends
+
+The backends scan your commit logs for certain text that references
+bug/ticket numbers.  If a reference is found, a copy of the commit
+message and a link to the changeset will be sent to the relevant BTS.
+If you write the text in a certain way, the bug in the relevant BTS
+will also be marked fixed (Trac) or pending (debbugs).
+
+Here are the phrases that are supported.  Matches are
+case-insensitive. Numeric values here are examples; of course you
+would use your real numbers here:
+
+Trac                 Debian                     Action
+-------------------- -------------------------- -----------------
+close #12345         close deb#12345            Notify & close
+closed #12345        closed deb#12345           Notify & close
+closes #12345        closes deb#12345           Notify & close
+fix #12345           fix deb#12345              Notify & close
+fixed #12345         fixed deb#12345            Notify & close
+fixes #12345         fixes deb#12345            Notify & close
+                     Closes: #12345             Notify & close
+addresses #12345     addresses deb#12345        Notify
+re #12345            re deb#12345               Notify
+references #12345    references deb#12345       Notify
+refs #12345          refs deb#12345             Notify
+see #12345           see deb#12345              Notify
+                     Refs: #12345               Notify
+
+You can use any command with a colon after it, and then omit the "deb"
+prefix, for Debian bugs.  Two examples of that are shown above.
+
+Multiple bugs may be combined with "and", ",", or "&".
+
+Example:
+
+    Changed blah and foo to do this or that. Fixes #10 and #12, and
+    refs #1530.
+
+This will close #10 and #12 in trac, and add a note to #1530 in
+Debian.
+
+=== Examples
+
+You can see an example of the actions of the Debian commit hook at:
+
+  http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=468076#10
+
 ------------------------------------------------------------
 FRONTENDS
 ------------------------------------------------------------
