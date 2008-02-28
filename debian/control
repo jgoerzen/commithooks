@@ -4,10 +4,19 @@ Priority: extra
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
+Vcs-Browser: http://git.complete.org/commithooks
+Vcs-Git: git://git.complete.org/commithooks
 
 Package: commithooks
 Architecture: all
 Depends: python
 Suggests: trac, git-core, mercurial, darcs
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: Hooks to inject VCS commits into bug-tracking systems
+ This is a collection of scripts to process commit actions from
+ different version control systems (VCS) and inject the results into
+ different bug-tracking systems (BTS), sometimes closing bugs as a result.
+ .
+ Supported VCS include Darcs, Mercurial, and Git.  Supported BTS
+ include debbugs (the Debian BTS) and Trac.
+ .
+ Homepage: http://software.complete.org/commithooks
