@@ -1,0 +1,58 @@
+------------------------------------------------------------
+vcs-commithooks
+------------------------------------------------------------
+
+Homepage: http://software.complete.org/vcs-commithooks
+Author: John Goerzen <jgoerzen@complete.org>
+
+
+This is a collection of scripts to process commit actions from
+different version control systems (VCS) and inject the results into
+different bug-tracking systems (BTS).
+
+Currently supported VCS:
+ * Darcs
+ * Mercurial
+ * Git
+
+Currently supported BTS:
+ * Trac
+ * Debbugs (Debian BTS)
+
+------------------------------------------------------------
+OVERVIEW
+------------------------------------------------------------
+
+The package consists of two parts: frontends and backends.
+
+The backends correspond to a specific BTS and are responsible for
+injecting data into the BTS.  They receive information on the command
+line that tell them what to inject.
+
+The frontends are called by the VCS directly.  They query the VCS for
+the information that is needed, then invoke the backends to inject it.
+
+The backends may be called directly by your own scripts, too, or
+called by new frontend scripts.
+
+------------------------------------------------------------
+BACKENDS
+------------------------------------------------------------
+
+There are two backends:
+
+  deb-post-commit-hook injects data via email into debbugs
+
+  trac-post-commit-hook uses the Trac libraries directly to inject
+  into Trac.
+
+You may run either program with --help to get a usage summary.  Not
+all options are required.
+
+trac-post-commit-hook will not run at all without the Trac libraries
+present.
+
+If you are using one of the supported VCS, you will likely not invoke
+the backends directly, but rather call a frontend which will take care
+of invoking the backend.
+

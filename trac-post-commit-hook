@@ -76,7 +76,7 @@ import time
 try:
     from trac.env import open_environment
 except:
-    print "Trac libraries are required for trac-post-commit to run"
+    print "Trac is required for trac-post-commit to run"
     sys.exit(254)
 
 from trac.ticket.notification import TicketNotifyEmail
