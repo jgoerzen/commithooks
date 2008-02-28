@@ -10,15 +10,21 @@ URL="$1"
 tracpath="$2"
 
 CMD="$(dirname $(readlink -f $0))/trac-post-commit-hook"
+GITREVCMD="$(dirname $(readlink -f $0))/git-find-revs"
+FILE="`mktemp -t git-trac-commit.XXXXXXXXXX`"
 
-hg log -r $HG_NODE --template '{node|short}\n{author}\n{desc}\n' | {
-  read shortnode
-  read user
-  read desc
-  while read line
-  do
-    desc="$desc"$'\n'"$line"
-  done
+procrevs() {
+    while read gitrev; do
+        git show -s --pretty "$gitrev" > "$FILE"
+        "$CMD" -p "$tracpath" -r "$gitrev" \
+            -u "`git show -s --pretty=format:%an ${gitrev}`" \
+            -s "$URL" \
+            -m "`git show -s --pretty=format:%s%n%b ${gitrev}`" \
 
-  "$CMD" -p "$tracpath" -r "$shortnode" -u "$user" -s "$URL" -m "$desc"
 }
+
+${GITREVCMD} | procrevs
+
+rm "$FILE"
+
+exit 0
