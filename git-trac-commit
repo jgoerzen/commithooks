@@ -19,8 +19,8 @@ procrevs() {
         "$CMD" -p "$tracpath" -r "$gitrev" \
             -u "`git show -s --pretty=format:%an ${gitrev}`" \
             -s "$URL" \
-            -m "`git show -s --pretty=format:%s%n%b ${gitrev}`" \
-
+            -m "`git show -s --pretty=format:%s%n%b ${gitrev}`"
+    done
 }
 
 ${GITREVCMD} | procrevs
