@@ -73,7 +73,12 @@ import os
 import sys
 import time 
 
-from trac.env import open_environment
+try:
+    from trac.env import open_environment
+except:
+    print "Trac libraries are required for trac-post-commit to run"
+    sys.exit(254)
+
 from trac.ticket.notification import TicketNotifyEmail
 from trac.ticket import Ticket
 from trac.ticket.web_ui import TicketModule
