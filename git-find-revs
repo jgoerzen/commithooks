@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # Copyright (c) 2007 Andy Parkins
+# Copyright (c) 2008 John Goerzen
 #
 # An example hook script to mail out commit update information.  This hook
 # sends emails listing new revisions to the repository introduced by the
