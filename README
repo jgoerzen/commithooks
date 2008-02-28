@@ -35,6 +35,9 @@ the information that is needed, then invoke the backends to inject it.
 The backends may be called directly by your own scripts, too, or
 called by new frontend scripts.
 
+You do not need to "install" this package; you can simply run the
+scripts directly from where you unpacked it.
+
 ------------------------------------------------------------
 BACKENDS
 ------------------------------------------------------------
