@@ -56,3 +56,25 @@ If you are using one of the supported VCS, you will likely not invoke
 the backends directly, but rather call a frontend which will take care
 of invoking the backend.
 
+------------------------------------------------------------
+FRONTENDS
+------------------------------------------------------------
+
+The frontends are:
+
+darcs-both-commit: Commit darcs messages to debbugs and Trac
+git-both-commit: Commit git messages to debbugs and Trac
+git-deb-commit: Commit git messages to debbugs
+git-trac-commit: Commit git messages to Trac
+git-find-revs: Used by git scripts to get the specific rev numbers
+               that are new
+hg-both-commit: Commit Mercurial messages to debbugs and Trac
+hg-deb-commit: Commit Mercurial messages to debbugs
+hg-trac-commit: Commit Mercurial messages to Trac
+
+------------------------------------------------------------
+DARCS FRONTEND
+------------------------------------------------------------
+
+darcs-both-commit 
+
